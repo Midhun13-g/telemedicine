@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, User, Pill, Search, CheckCircle, AlertCircle, FileText, Heart, Activity, Video, MapPin, Star } from 'lucide-react';
+import { Calendar, Clock, User, Pill, Search, CheckCircle, AlertCircle, FileText, Heart, Activity, Video, AudioLines, MapPin, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockAppointments, mockPrescriptions, mockMedicineStock } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [medicineSearch, setMedicineSearch] = useState('');
   const [symptoms, setSymptoms] = useState({
@@ -34,8 +36,8 @@ const PatientDashboard = () => {
     
     if (selectedSymptoms.length > 0 || symptoms.other) {
       toast({
-        title: "Symptoms Recorded",
-        description: "Based on your symptoms, we recommend consulting a doctor. Would you like to book an appointment?",
+        title: t('symptomsRecorded'),
+        description: t('consultDoctor'),
       });
     }
   };
@@ -49,7 +51,7 @@ const PatientDashboard = () => {
 
     if (medicine) {
       toast({
-        title: medicine.stock > 0 ? "Medicine Available!" : "Out of Stock",
+        title: medicine.stock > 0 ? t('medicineAvailable') : t('outOfStock'),
         description: medicine.stock > 0 
           ? `${medicine.name} is available. Stock: ${medicine.stock} units, Price: ₹${medicine.price}`
           : `${medicine.name} is currently out of stock. We'll notify you when available.`,
@@ -57,7 +59,7 @@ const PatientDashboard = () => {
       });
     } else {
       toast({
-        title: "Medicine Not Found",
+        title: t('medicineNotFound'),
         description: "The requested medicine is not available in our database.",
         variant: "destructive"
       });
@@ -68,13 +70,13 @@ const PatientDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Patient Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('patient')} {t('dashboard')}</h1>
           <p className="text-muted-foreground mt-1">Your health, our priority</p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="text-success">
             <Heart className="h-3 w-3 mr-1" />
-            Welcome, {user?.name}
+            {t('welcome')}, {user?.name}
           </Badge>
         </div>
       </div>
@@ -90,7 +92,7 @@ const PatientDashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="text-center">
                 <Activity className="h-8 w-8 mx-auto mb-1" />
-                <div className="text-sm">Active</div>
+                <div className="text-sm">{t('active')}</div>
               </div>
               <div className="text-center">
                 <Heart className="h-8 w-8 mx-auto mb-1" />
@@ -103,17 +105,17 @@ const PatientDashboard = () => {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="symptoms">Symptom Checker</TabsTrigger>
-          <TabsTrigger value="appointments">Appointments</TabsTrigger>
-          <TabsTrigger value="medicines">Medicines</TabsTrigger>
+          <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
+          <TabsTrigger value="symptoms">{t('symptoms')}</TabsTrigger>
+          <TabsTrigger value="appointments">{t('appointments')}</TabsTrigger>
+          <TabsTrigger value="medicines">{t('medicines')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="shadow-card hover:shadow-medical transition-shadow duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Upcoming Appointments</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('upcomingAppointments')}</CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -130,7 +132,7 @@ const PatientDashboard = () => {
 
             <Card className="shadow-card hover:shadow-medical transition-shadow duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Prescriptions</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('activePrescriptions')}</CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -147,7 +149,7 @@ const PatientDashboard = () => {
 
             <Card className="shadow-card hover:shadow-medical transition-shadow duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Health Score</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('healthScore')}</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -165,25 +167,28 @@ const PatientDashboard = () => {
 
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>{t('quickActions')}</CardTitle>
               <CardDescription>Common tasks for patients</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-4 gap-4">
               <Button variant="medical" className="h-20 flex-col space-y-2 hover:scale-105 transition-transform">
                 <Calendar className="h-6 w-6" />
-                <span>Book Appointment</span>
+                <span>{t('bookAppointment')}</span>
               </Button>
               <Button variant="outline" className="h-20 flex-col space-y-2 hover:scale-105 transition-transform">
                 <Search className="h-6 w-6" />
-                <span>Check Medicine</span>
+                <span>{t('checkMedicine')}</span>
               </Button>
               <Button variant="success" className="h-20 flex-col space-y-2 hover:scale-105 transition-transform">
-                <Video className="h-6 w-6" />
-                <span>Video Call</span>
+                <div className="flex items-center space-x-1">
+                  <Video className="h-4 w-4" />
+                  <AudioLines className="h-4 w-4" />
+                </div>
+                <span>{t('videoAudioCall')}</span>
               </Button>
               <Button variant="secondary" className="h-20 flex-col space-y-2 hover:scale-105 transition-transform">
                 <MapPin className="h-6 w-6" />
-                <span>Find Pharmacy</span>
+                <span>{t('findPharmacy')}</span>
               </Button>
             </CardContent>
           </Card>
@@ -191,7 +196,7 @@ const PatientDashboard = () => {
           {/* Recent Activity */}
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>{t('recentActivity')}</CardTitle>
               <CardDescription>Your latest health interactions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -223,7 +228,7 @@ const PatientDashboard = () => {
         <TabsContent value="symptoms" className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Symptom Checker</CardTitle>
+              <CardTitle>{t('symptoms')} Checker</CardTitle>
               <CardDescription>Select your symptoms to get initial guidance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -246,13 +251,13 @@ const PatientDashboard = () => {
                       onChange={(e) => setSymptoms(prev => ({ ...prev, [symptom]: e.target.checked }))}
                       className="rounded border-border text-primary focus:ring-primary"
                     />
-                    <span className="capitalize">{symptom.replace(/([A-Z])/g, ' $1').trim()}</span>
+                    <span className="capitalize">{t(symptom)}</span>
                   </label>
                 ))}
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Other symptoms:</label>
+                <label className="block text-sm font-medium mb-2">{t('otherSymptoms')}:</label>
                 <Textarea
                   placeholder="Describe any other symptoms..."
                   value={symptoms.other}
@@ -262,7 +267,7 @@ const PatientDashboard = () => {
               </div>
 
               <Button onClick={handleSymptomCheck} variant="medical" className="w-full hover:scale-105 transition-transform">
-                Check Symptoms
+                {t('checkSymptoms')}
               </Button>
             </CardContent>
           </Card>
@@ -271,7 +276,7 @@ const PatientDashboard = () => {
         <TabsContent value="appointments" className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Your Appointments</CardTitle>
+              <CardTitle>Your {t('appointments')}</CardTitle>
               <CardDescription>Manage your doctor consultations</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -286,7 +291,7 @@ const PatientDashboard = () => {
                       </Badge>
                     </div>
                     <Badge variant={appointment.status === 'approved' ? 'default' : 'secondary'} className="animate-pulse-glow">
-                      {appointment.status}
+                      {t(appointment.status)}
                     </Badge>
                   </div>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -301,13 +306,16 @@ const PatientDashboard = () => {
                   </div>
                   {appointment.symptoms && (
                     <div className="bg-muted/50 p-2 rounded text-sm">
-                      <strong>Symptoms:</strong> {appointment.symptoms}
+                      <strong>{t('symptoms')}:</strong> {appointment.symptoms}
                     </div>
                   )}
                   {appointment.status === 'approved' && (
                     <Button size="sm" variant="success" className="mt-2">
-                      <Video className="h-3 w-3 mr-1" />
-                      Join Video Call
+                      <div className="flex items-center space-x-1 mr-1">
+                        <Video className="h-3 w-3" />
+                        <AudioLines className="h-3 w-3" />
+                      </div>
+                      {t('joinCall')}
                     </Button>
                   )}
                 </div>
@@ -319,26 +327,26 @@ const PatientDashboard = () => {
         <TabsContent value="medicines" className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Medicine Availability</CardTitle>
+              <CardTitle>{t('medicineAvailability')}</CardTitle>
               <CardDescription>Check if medicines are available at nearby pharmacies</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex space-x-2">
                 <Input
-                  placeholder="Search medicine name..."
+                  placeholder={t('searchMedicine')}
                   value={medicineSearch}
                   onChange={(e) => setMedicineSearch(e.target.value)}
                   className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
                 <Button onClick={searchMedicine} variant="medical" className="hover:scale-105 transition-transform">
                   <Search className="h-4 w-4" />
-                  Search
+                  {t('search')}
                 </Button>
               </div>
               
               {/* Popular medicines */}
               <div>
-                <h4 className="font-medium mb-2">Popular Medicines</h4>
+                <h4 className="font-medium mb-2">{t('popularMedicines')}</h4>
                 <div className="flex flex-wrap gap-2">
                   {['Paracetamol', 'Azithromycin', 'Cetirizine', 'Amoxicillin'].map((medicine) => (
                     <Button
@@ -358,7 +366,7 @@ const PatientDashboard = () => {
 
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Your Prescriptions</CardTitle>
+              <CardTitle>{t('yourPrescriptions')}</CardTitle>
               <CardDescription>Active prescriptions from doctors</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -371,7 +379,7 @@ const PatientDashboard = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Badge variant={prescription.status === 'active' ? 'default' : 'secondary'}>
-                        {prescription.status}
+                        {t(prescription.status)}
                       </Badge>
                       <Badge variant="outline">{prescription.date}</Badge>
                     </div>
@@ -391,18 +399,18 @@ const PatientDashboard = () => {
 
                   {prescription.notes && (
                     <p className="text-sm text-muted-foreground bg-muted p-2 rounded">
-                      Notes: {prescription.notes}
+                      {t('notes')}: {prescription.notes}
                     </p>
                   )}
                   
                   <div className="flex space-x-2 pt-2">
                     <Button size="sm" variant="outline">
                       <MapPin className="h-3 w-3 mr-1" />
-                      Find Pharmacy
+                      {t('findPharmacy')}
                     </Button>
                     <Button size="sm" variant="success">
                       <CheckCircle className="h-3 w-3 mr-1" />
-                      Mark as Taken
+                      {t('markAsTaken')}
                     </Button>
                   </div>
                 </div>
